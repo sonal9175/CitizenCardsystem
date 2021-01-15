@@ -16,23 +16,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.login.dao.AdminRepository;
-import com.login.dao.UserRepository;
+
 import com.login.error.NoSuchElementException;
 import com.login.model.Admin;
-import com.login.model.User;
+
 import com.login.service.IAdminService;
-import com.login.service.IUserService;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/login")
 public class LoginController {
 
-	@Autowired(required = true)
-	public IUserService userservice;
-
-	@Autowired
-	private UserRepository repository;
+	
 
 	@Autowired(required = true)
 	public IAdminService adminservice;
@@ -40,49 +36,7 @@ public class LoginController {
 	@Autowired
 	private AdminRepository adminRepository;
 
-	// User controller part
-	// to get user by email id
-	@GetMapping("/user/get/{uemailid}")
-	public ResponseEntity<User> getUserById(@PathVariable String uemailid) throws NoSuchElementException {
-		User user = repository.findById(uemailid)
-				.orElseThrow(() -> new NoSuchElementException("User id for email id " + uemailid + " not found"));
-		return ResponseEntity.ok().body(user);
-	}
-
-	// for user registration
-	@PostMapping("/user/register")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<String> signInUser(@Valid @RequestBody User newUser) {
-		User user = userservice.saveUser(newUser);
-		String uemailid = user.getUemailid();
-		return new ResponseEntity<String>("User With ID :" + uemailid + " registered Successfully ", HttpStatus.OK);
-
-	}
-
-	// for user login
-	@GetMapping(value = "/user/login/{uemailid}/{upass}")
-	public ResponseEntity<String> loginUser(@PathVariable String uemailid, @PathVariable String upass) {
-		User user = userservice.checkPassword(uemailid, upass);
-		if (user != null) {
-			return new ResponseEntity<String>("Login Successful", HttpStatus.OK);
-		}
-		return new ResponseEntity<String>("Login unsuccessful! Please check the password.", HttpStatus.OK);
-	}
-
-	// For user forget password
-	@PutMapping("/user/forgetPassword/{uemailid}")
-	public ResponseEntity<User> updateUserPassword(@PathVariable String uemailid, @Valid @RequestBody User userDetails)
-			throws NoSuchElementException {
-		User user = repository.findById(uemailid)
-				.orElseThrow(() -> new NoSuchElementException("User not found for this id:" + uemailid));
-
-		user.setUemailid(userDetails.getUemailid());
-		user.setUpass(userDetails.getUpass());
-
-		final User updatedUser = repository.save(user);
-		return ResponseEntity.ok(updatedUser);
-	}
-
+	
 	// Admin controller part
 	// to get admin by username
 	@GetMapping("admin/{adminUserName}")
